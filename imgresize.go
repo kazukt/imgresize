@@ -1,14 +1,33 @@
 package main
 
 import (
+	"flag"
 	"image"
 	"image/png"
 	"log"
 	"os"
 )
 
+var (
+	srcName string
+	dstName string
+)
+
+func init() {
+	flag.StringVar(&srcName, "src", "", "input image file")
+	flag.StringVar(&dstName, "dst", "", "output image file")
+}
+
 func main() {
-	src, err := os.Open("input.png")
+	flag.Parse()
+	if srcName == "" {
+		log.Fatal("input file is required")
+	}
+	if dstName == "" {
+		log.Fatal("output file is required")
+	}
+
+	src, err := os.Open(srcName)
 	// FIXME: update error handling.
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dst, err := os.Create("output.png")
+	dst, err := os.Create(dstName)
 	// FIXME: update error handling.
 	if err != nil {
 		log.Fatal(err)
