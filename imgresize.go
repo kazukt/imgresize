@@ -1,10 +1,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"fmt"
 	"image"
 	"image/png"
-	"log"
 	"os"
 )
 
@@ -18,38 +19,47 @@ func init() {
 	flag.StringVar(&dstName, "dst", "", "output image file")
 }
 
-func main() {
+func run() error {
 	flag.Parse()
 	if srcName == "" {
-		log.Fatal("input file is required")
+		return errors.New("input file is required")
 	}
 	if dstName == "" {
-		log.Fatal("output file is required")
+		return errors.New("output file is required")
 	}
 
 	src, err := os.Open(srcName)
 	// FIXME: update error handling.
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer src.Close()
 
 	m, _, err := image.Decode(src)
 	// FIXME: update error handling.
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	dst, err := os.Create(dstName)
 	// FIXME: update error handling.
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer dst.Close()
 
 	err = png.Encode(dst, m)
 	// FIXME: update error handling.
 	if err != nil {
-		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprint(os.Stderr, err)
+		os.Exit(1)
 	}
 }
