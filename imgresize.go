@@ -14,11 +14,15 @@ import (
 var (
 	srcName string
 	dstName string
+	height  int
+	width   int
 )
 
 func init() {
 	flag.StringVar(&srcName, "src", "", "input image file")
 	flag.StringVar(&dstName, "dst", "", "output image file")
+	flag.IntVar(&height, "height", 30, "image height")
+	flag.IntVar(&width, "width", 30, "image width")
 }
 
 func run() error {
@@ -43,9 +47,8 @@ func run() error {
 		return err
 	}
 
-	rect := m.Bounds()
-	mdst := image.NewRGBA(image.Rect(0, 0, rect.Dx()/4, rect.Dy()/4))
-	draw.CatmullRom.Scale(mdst, mdst.Rect, m, rect, draw.Over, nil)
+	mdst := image.NewRGBA(image.Rect(0, 0, height, width))
+	draw.CatmullRom.Scale(mdst, mdst.Rect, m, m.Bounds(), draw.Over, nil)
 
 	dst, err := os.Create(dstName)
 	// FIXME: update error handling.
