@@ -7,6 +7,8 @@ import (
 	"image"
 	"image/png"
 	"os"
+
+	"golang.org/x/image/draw"
 )
 
 var (
@@ -41,6 +43,10 @@ func run() error {
 		return err
 	}
 
+	rect := m.Bounds()
+	mdst := image.NewRGBA(image.Rect(0, 0, rect.Dx()/4, rect.Dy()/4))
+	draw.CatmullRom.Scale(mdst, mdst.Rect, m, rect, draw.Over, nil)
+
 	dst, err := os.Create(dstName)
 	// FIXME: update error handling.
 	if err != nil {
@@ -48,7 +54,8 @@ func run() error {
 	}
 	defer dst.Close()
 
-	err = png.Encode(dst, m)
+	// FIXME: write in various formats.
+	err = png.Encode(dst, mdst)
 	// FIXME: update error handling.
 	if err != nil {
 		return err
